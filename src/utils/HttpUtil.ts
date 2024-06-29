@@ -1,18 +1,17 @@
 import axios, {AxiosError, AxiosRequestConfig} from "axios";
 
 export class HttpUtil {
-    private options = {
-        method: "",
-        url: process.env.BACKEND_URL,
-        headers: {
-            'content-type': 'application/json',
-        },
-        data: {}
+
+    private options: {
+        method: string,
+        url: string,
+        headers: any,
+        data: any
     };
 
     public async request() {
         try{
-            console.log(this.options.url)
+            console.log(this.options)
             const response = await axios.request(this.options);
             return response.data;
         }
@@ -29,9 +28,10 @@ export class HttpUtil {
     }
 
     public async configure(data: any, method: string, endpoint: string){
+        this.options = await this.getOptions()
         this.options.method = method;
         this.options.url = this.options.url + endpoint;
-        if(method == 'POST'){
+        if(method == 'POST' || method == 'PUT' || method == 'DELETE'){
             this.options.data = data;
         }
         if(method == 'GET'){
@@ -42,5 +42,16 @@ export class HttpUtil {
             }
             this.options.url = this.options.url.slice(0, this.options.url.length-1);
         }
+    }
+
+    private async getOptions(){
+        return  {
+            method: "",
+            url: process.env.BACKEND_URL,
+            headers: {
+                'content-type': 'application/json',
+            },
+            data: {}
+        };
     }
 }

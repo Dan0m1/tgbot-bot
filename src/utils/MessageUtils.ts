@@ -56,7 +56,14 @@ export class MessageUtils {
     }
 
     public async getNumberInText(): Promise<number>{
-        const regExp = new RegExp(/\d+/)
+        const regExp = new RegExp(/\b\d+\b/g)
         return +this.ctx.message.text.match(regExp)[0];
+    }
+
+    public async getNames(): Promise<string[]>{
+        const regExp = new RegExp(/\[.+\]/)
+        const msgText = this.ctx.message.text;
+        const stringWithNames = msgText.match(regExp)[0].slice(1,-1);
+        return stringWithNames.trim().split(" ");
     }
 }

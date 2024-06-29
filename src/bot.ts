@@ -1,17 +1,35 @@
 require('dotenv').config();
-import {Bot, GrammyError, HttpError} from "grammy";
+import {Bot, Context, GrammyError, HttpError,  session, SessionFlavor} from "grammy";
 import {run} from "@grammyjs/runner";
 import {assignMiddleware} from "./middleware/Assign/AssignMiddleware";
 import {jarMiddleware} from "./middleware/Jar/JarMiddleware";
+import {jarUserMiddleware} from "./middleware/JarUser/JarUserMiddleware";
+import {listMiddleware} from "./middleware/List/ListMiddleware";
 import Configuration from "../lib/config/Configuration";
+import {
+    type Conversation,
+    type ConversationFlavor,
+    conversations,
+    createConversation,
+} from "@grammyjs/conversations";
 
+
+interface SessionData {
+}
+
+export type MyContext = Context & SessionFlavor<SessionData> & ConversationFlavor;
+export type MyConversation = Conversation<MyContext>;
 
 // @ts-ignore
 async function bootstrap(){
-    const bot = new Bot(Configuration().botToken);
+    const bot = new Bot<MyContext>(Configuration().botToken);
 
+    bot.use(session({ initial: () => ({}) }));
+    bot.use(conversations());
     bot.use(assignMiddleware);
     bot.use(jarMiddleware);
+    bot.use(jarUserMiddleware);
+    bot.use(listMiddleware);
 
     bot.catch((err) => {
         const ctx = err.ctx;

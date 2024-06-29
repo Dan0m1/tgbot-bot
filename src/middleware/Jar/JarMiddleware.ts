@@ -1,13 +1,17 @@
 import {Composer, Context} from "grammy";
-export const jarMiddleware = new Composer()
+import {Jar} from "./Jar";
+import {JarResponse} from "./JarResponse";
+import {JarUser} from "../JarUser/JarUser";
+import {MyContext} from "../../bot";
+export const jarMiddleware = new Composer<MyContext>()
 
 jarMiddleware.command(
     "jar",
-    async (ctx, next) => await tryExecuteFunction(ctx, displayJar)
+    async (ctx, next) => await tryExecuteRelatedFunction(ctx, displayJar)
 )
 
-async function tryExecuteFunction(ctx: Context, fn: (ctx: Context, jar: Jar) => Promise<any>){
-    const jar = new Jar();
+async function tryExecuteRelatedFunction(ctx: MyContext, fn: (ctx: MyContext, jar: Jar) => Promise<any>){
+    const jar = new Jar(ctx);
     try {
         await fn(ctx, jar);
     }catch(err){
@@ -15,7 +19,9 @@ async function tryExecuteFunction(ctx: Context, fn: (ctx: Context, jar: Jar) => 
     }
 }
 
-async function displayJar(ctx:Context, jar: Jar){
-    const response = await jar.getJarInfo();
-    await new JarResponse(ctx).displayJar(response);
+async function displayJar(ctx: MyContext, jar: Jar){
+    const jarResponse = await jar.getJarInfo();
+    const jarUser: JarUser = new JarUser(ctx);
+    const jarUserResponse = await jarUser.getAll();
+    await new JarResponse(ctx).displayJar(jarResponse, jarUserResponse);
 }

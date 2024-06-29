@@ -1,22 +1,21 @@
 import {Context} from "grammy";
+import {MyContext} from "../../bot";
 
 export class AssignResponse {
-    private ctx: Context;
+    private ctx: MyContext;
 
-    constructor(ctx: Context) {
+    constructor(ctx: MyContext) {
         this.ctx = ctx;
     }
 
-    public async successfullyAssigned(response: any) {
-        console.log(response)
-        await this.ctx.reply(`Successfully Assigned!\n`);
+    public async successfullyAssigned() {
+        await this.ctx.reply(`Успішно додано завдання.`);
     }
 
     public async displayAssignedToUser(response: any) {
-        console.log(response);
         let reply = ""
-        response.tasks.forEach((task:any) => {
-            reply = reply + `Завдання:  ${task.description}\n`
+        response.tasks.forEach((task:any, index: number) => {
+            reply = reply + `Завдання №${index+1}:  ${task.description}\n`
         })
 
         if(response.userId){
@@ -30,10 +29,11 @@ export class AssignResponse {
     }
 
     public async successfullyDeleted(response: any) {
+        // TODO
         console.log(response);
     }
 
     public async displayError(response: any){
-        await this.ctx.reply("Error: " + response.message);
+        await this.ctx.reply(response.message);
     }
 }

@@ -13,6 +13,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@grammyjs/conversations": "^1.2.0",
+    "@grammyjs/hydrate": "^1.4.1",
+    "@grammyjs/menu": "^1.2.1",
     "@grammyjs/runner": "^2.0.3",
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",

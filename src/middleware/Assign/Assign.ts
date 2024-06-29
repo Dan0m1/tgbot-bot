@@ -1,4 +1,3 @@
-import {Context} from "grammy";
 import {MessageUtils} from "../../utils/MessageUtils";
 import {User} from "../../../lib/data/User";
 import {AssignDataAdapter} from "../../../lib/mapper/AssignDataAdapter";
@@ -8,14 +7,15 @@ import {
     buildUserPayloadFromCtx,
     buildUserPayloadFromUser,
 } from "../../utils/BuildUserPayloadUtil";
+import {MyContext} from "../../bot";
 
 export class Assign{
     private messageUtils: MessageUtils;
     private assignAdapter: AssignDataAdapter = new AssignDataAdapter();
     private assignApi: AssignAPI;
-    private ctx: Context;
+    private ctx: MyContext;
 
-    constructor(ctx: Context) {
+    constructor(ctx: MyContext) {
         this.messageUtils = new MessageUtils(ctx);
         this.assignApi = new AssignAPI();
         this.ctx = ctx;
@@ -38,7 +38,7 @@ export class Assign{
     public async assignedToMe(){
         const user = await buildUserPayloadFromCtx(this.ctx)
         const apiResponse = await this.assignApi.getAllAssignedToUser(user);
-        if(!apiResponse){
+        if(!apiResponse || apiResponse.tasks.length == 0){
             throw new Error(`Для Вас відсутні завдання`)
         }
         return apiResponse;
@@ -51,15 +51,25 @@ export class Assign{
         }
         const payload = await buildUserPayloadFromUser(user)
         const apiResponse = await this.assignApi.getAllAssignedToUser(payload);
-        if(!apiResponse){
+        if(!apiResponse || apiResponse.tasks.length == 0){
             throw new Error(`Для користувача відсутні завдання`)
         }
         return apiResponse;
     }
 
     public async deleteEntry(){
+        const user = (await this.messageUtils.getMentionedUsers())[0];
         const entryId = await this.messageUtils.getNumberInText();
-        const apiResponse = await this.assignApi.deleteEntry(entryId);
-        return apiResponse;
+        if(!user){
+            throw new Error(`Відсутні тегнуті користувачі`);
+        }
+        const payload = await buildUserPayloadFromUser(user)
+        const apiResponse = await this.assignApi.getAllAssignedToUser(payload)
+
+        if(!apiResponse || apiResponse.tasks.length == 0){
+            throw new Error(`Для користувача відсутні завдання`)
+        }
+        const targetTask = apiResponse.tasks.find((task, index) => index === entryId-1);
+        await this.assignApi.deleteEntry(targetTask.id);
     }
 }
