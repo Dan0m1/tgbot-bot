@@ -1,11 +1,13 @@
-import {JarApiResponseData} from "../../../lib/data/JarApiResponseData";
-import {JarUserApiResponseData} from "../../../lib/data/JarUserApiResponseData";
-import {MyContext} from "../../bot";
+import {JarApiResponseData} from "../../lib/data/apiResponses/JarApiResponseData";
+import {JarUserApiResponseData} from "../../lib/data/apiResponses/JarUserApiResponseData";
+import {MyContext} from "../bot";
+import {ResponseError} from "./ResponseError";
 
-export class JarResponse {
-    private ctx: MyContext;
+export class JarResponse extends ResponseError{
+    protected ctx: MyContext;
 
     constructor(ctx: MyContext) {
+        super(ctx);
         this.ctx = ctx;
     }
 
@@ -17,9 +19,5 @@ export class JarResponse {
             }
         }
         await this.ctx.reply(payload, { parse_mode: "MarkdownV2" });
-    }
-
-    public async displayError(response: any){
-        await this.ctx.reply(response.message);
     }
 }

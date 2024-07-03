@@ -1,5 +1,5 @@
 import {HttpUtil} from "../../src/utils/HttpUtil";
-import {JarApiResponseData} from "../data/JarApiResponseData";
+import {JarApiResponseData} from "../data/apiResponses/JarApiResponseData";
 
 export class JarAPI{
     constructor(private httpUtil: HttpUtil = new HttpUtil()) {}

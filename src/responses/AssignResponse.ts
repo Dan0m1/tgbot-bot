@@ -1,10 +1,12 @@
 import {Context} from "grammy";
-import {MyContext} from "../../bot";
+import {MyContext} from "../bot";
+import {ResponseError} from "./ResponseError";
 
-export class AssignResponse {
-    private ctx: MyContext;
+export class AssignResponse extends ResponseError{
+    protected ctx: MyContext;
 
     constructor(ctx: MyContext) {
+        super(ctx);
         this.ctx = ctx;
     }
 
@@ -31,9 +33,5 @@ export class AssignResponse {
     public async successfullyDeleted(response: any) {
         // TODO
         console.log(response);
-    }
-
-    public async displayError(response: any){
-        await this.ctx.reply(response.message);
     }
 }

@@ -1,12 +1,12 @@
 import {HttpUtil} from "../../src/utils/HttpUtil";
-import {JarUserApiResponseData} from "../data/JarUserApiResponseData";
-import {JarUserCreateData} from "../data/JarUserCreateData";
-import {JarUserUpdateData} from "../data/JarUserUpdateData";
+import {JarUserApiResponseData} from "../data/apiResponses/JarUserApiResponseData";
+import {CreateJarUserDTO} from "../data/DTOs/CreateJarUserDTO";
+import {UpdateJarUserDTO} from "../data/DTOs/UpdateJarUserDTO";
 
 export class JarUserAPI {
     constructor(private httpUtil: HttpUtil = new HttpUtil()) {}
 
-    public async createJarUser(data: JarUserCreateData) : Promise<JarUserApiResponseData>{
+    public async createJarUser(data: CreateJarUserDTO) : Promise<JarUserApiResponseData>{
         await this.httpUtil.configure(data, "POST", "jarUser");
         return this.httpUtil.request();
     }
@@ -16,7 +16,7 @@ export class JarUserAPI {
         return this.httpUtil.request();
     }
 
-    public async updateJarUser(data: JarUserUpdateData){
+    public async updateJarUser(data: UpdateJarUserDTO){
         await this.httpUtil.configure(data, "PUT", "jarUser");
         await this.httpUtil.request();
     }

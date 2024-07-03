@@ -1,10 +1,11 @@
+import {listMiddleware} from "./middleware/ListMiddleware";
+
 require('dotenv').config();
 import {Bot, Context, GrammyError, HttpError,  session, SessionFlavor} from "grammy";
 import {run} from "@grammyjs/runner";
-import {assignMiddleware} from "./middleware/Assign/AssignMiddleware";
-import {jarMiddleware} from "./middleware/Jar/JarMiddleware";
-import {jarUserMiddleware} from "./middleware/JarUser/JarUserMiddleware";
-import {listMiddleware} from "./middleware/List/ListMiddleware";
+import {assignMiddleware} from "./middleware/AssignMiddleware";
+import {jarMiddleware} from "./middleware/JarMiddleware";
+import {jarUserMiddleware} from "./middleware/JarUserMiddleware";
 import Configuration from "../lib/config/Configuration";
 import {
     type Conversation,
@@ -12,6 +13,7 @@ import {
     conversations,
     createConversation,
 } from "@grammyjs/conversations";
+import {listCellMiddleware} from "./middleware/ListCellMiddleware";
 
 
 interface SessionData {
@@ -30,6 +32,9 @@ async function bootstrap(){
     bot.use(jarMiddleware);
     bot.use(jarUserMiddleware);
     bot.use(listMiddleware);
+    bot.use(listCellMiddleware);
+
+    console.log("Бот працює.")
 
     bot.catch((err) => {
         const ctx = err.ctx;

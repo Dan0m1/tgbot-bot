@@ -1,10 +1,10 @@
-import {JarUserAPI} from "../../../lib/api/jarUserAPI";
-import {MessageUtils} from "../../utils/MessageUtils";
-import {JarUserCreateData} from "../../../lib/data/JarUserCreateData";
-import {JarUserApiResponseData} from "../../../lib/data/JarUserApiResponseData";
-import {MyContext} from "../../bot";
+import {JarUserAPI} from "../../lib/api/JarUserAPI";
+import {MessageUtils} from "../utils/MessageUtils";
+import {CreateJarUserDTO} from "../../lib/data/DTOs/CreateJarUserDTO";
+import {JarUserApiResponseData} from "../../lib/data/apiResponses/JarUserApiResponseData";
+import {MyContext} from "../bot";
 
-export class JarUser{
+export class JarUserService {
     private jarUserApi: JarUserAPI;
     private ctx: MyContext;
     private messageUtils: MessageUtils;
@@ -21,7 +21,7 @@ export class JarUser{
             throw new Error("Неправильний формат вводу імен.\nЗразок: [ім'я ім'я ім'я]")
         }
         const moneyGoal = await this.messageUtils.getNumberInText();
-        const jarUserPayload: JarUserCreateData[] = names.map((name):JarUserCreateData => {
+        const jarUserPayload: CreateJarUserDTO[] = names.map((name):CreateJarUserDTO => {
             return {
                 name,
                 moneyGoal: moneyGoal*100
@@ -54,7 +54,7 @@ export class JarUser{
     async update(){
         const names = await this.messageUtils.getNames();
         const moneyGoal = await this.messageUtils.getNumberInText();
-        const jarUserPayload: JarUserCreateData[] = names.map((name):JarUserCreateData => {
+        const jarUserPayload: CreateJarUserDTO[] = names.map((name):CreateJarUserDTO => {
             return {
                 name,
                 moneyGoal: moneyGoal*100

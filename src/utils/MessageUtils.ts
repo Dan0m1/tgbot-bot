@@ -1,6 +1,6 @@
 import {Context} from "grammy";
-import {User} from "../../lib/data/User";
-import {MentionEntity} from "../../lib/data/MentionEntity";
+import {User} from "../../lib/data/custom/User";
+import {MentionEntity} from "../../lib/data/custom/MentionEntity";
 
 export class MessageUtils {
     private lastUserIndex = -1;

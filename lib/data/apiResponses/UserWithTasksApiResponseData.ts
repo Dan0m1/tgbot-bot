@@ -1,4 +1,4 @@
-export class AssignApiResponseData {
+export class UserWithTasksApiResponseData {
     id: number ;
     userId: string;
     username: string;

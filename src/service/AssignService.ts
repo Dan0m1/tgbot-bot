@@ -1,23 +1,26 @@
-import {MessageUtils} from "../../utils/MessageUtils";
-import {User} from "../../../lib/data/User";
-import {AssignDataAdapter} from "../../../lib/mapper/AssignDataAdapter";
-import {AssignData} from "../../../lib/data/AssignData";
-import {AssignAPI} from "../../../lib/api/assignAPI";
+import {MessageUtils} from "../utils/MessageUtils";
+import {User} from "../../lib/data/custom/User";
+import {AssignDataAdapter} from "../../lib/mapper/AssignDataAdapter";
+import {CreateTasksDTO} from "../../lib/data/DTOs/CreateTasksDTO";
+import {TaskAPI} from "../../lib/api/TaskAPI";
+import {UserAPI} from "../../lib/api/UserAPI";
 import {
     buildUserPayloadFromCtx,
     buildUserPayloadFromUser,
-} from "../../utils/BuildUserPayloadUtil";
-import {MyContext} from "../../bot";
+} from "../utils/BuildUserPayloadUtil";
+import {MyContext} from "../bot";
 
-export class Assign{
+export class AssignService {
     private messageUtils: MessageUtils;
     private assignAdapter: AssignDataAdapter = new AssignDataAdapter();
-    private assignApi: AssignAPI;
+    private userApi: UserAPI;
+    private taskApi: TaskAPI;
     private ctx: MyContext;
 
     constructor(ctx: MyContext) {
         this.messageUtils = new MessageUtils(ctx);
-        this.assignApi = new AssignAPI();
+        this.userApi = new UserAPI();
+        this.taskApi = new TaskAPI();
         this.ctx = ctx;
     }
 
@@ -30,14 +33,14 @@ export class Assign{
         if(!text){
             throw new Error("Відсутнє завдання")
         }
-        const data: AssignData = await this.assignAdapter.buildData(users, text);
-        const apiResponse = await this.assignApi.create(data);
+        const data: CreateTasksDTO = await this.assignAdapter.buildData(users, text);
+        const apiResponse = await this.taskApi.create(data);
         return apiResponse;
     }
 
     public async assignedToMe(){
         const user = await buildUserPayloadFromCtx(this.ctx)
-        const apiResponse = await this.assignApi.getAllAssignedToUser(user);
+        const apiResponse = await this.userApi.getAllAssignedToUser(user);
         if(!apiResponse || apiResponse.tasks.length == 0){
             throw new Error(`Для Вас відсутні завдання`)
         }
@@ -50,7 +53,7 @@ export class Assign{
             throw new Error(`Відсутні тегнуті користувачі`);
         }
         const payload = await buildUserPayloadFromUser(user)
-        const apiResponse = await this.assignApi.getAllAssignedToUser(payload);
+        const apiResponse = await this.userApi.getAllAssignedToUser(payload);
         if(!apiResponse || apiResponse.tasks.length == 0){
             throw new Error(`Для користувача відсутні завдання`)
         }
@@ -64,12 +67,12 @@ export class Assign{
             throw new Error(`Відсутні тегнуті користувачі`);
         }
         const payload = await buildUserPayloadFromUser(user)
-        const apiResponse = await this.assignApi.getAllAssignedToUser(payload)
+        const apiResponse = await this.userApi.getAllAssignedToUser(payload)
 
         if(!apiResponse || apiResponse.tasks.length == 0){
             throw new Error(`Для користувача відсутні завдання`)
         }
         const targetTask = apiResponse.tasks.find((task, index) => index === entryId-1);
-        await this.assignApi.deleteEntry(targetTask.id);
+        await this.taskApi.deleteEntry(targetTask.id);
     }
 }

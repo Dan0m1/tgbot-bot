@@ -1,4 +1,4 @@
-export class JarUserCreateData {
+export class UpdateJarUserDTO {
     name: string;
     moneyGoal: number;
 }

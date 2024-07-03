@@ -1,8 +1,8 @@
-import {AssignData} from "../data/AssignData";
-import {User} from "../data/User";
+import {CreateTasksDTO} from "../data/DTOs/CreateTasksDTO";
+import {User} from "../data/custom/User";
 
 export class AssignDataAdapter {
-    public async buildData(users: User[], description: string): Promise<AssignData>{
+    public async buildData(users: User[], description: string): Promise<CreateTasksDTO>{
         return {
             users,
             description

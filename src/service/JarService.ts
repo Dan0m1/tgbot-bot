@@ -1,8 +1,8 @@
-import {JarAPI} from "../../../lib/api/jarAPI";
-import {JarApiResponseData} from "../../../lib/data/JarApiResponseData";
-import {MyContext} from "../../bot";
+import {JarAPI} from "../../lib/api/JarAPI";
+import {JarApiResponseData} from "../../lib/data/apiResponses/JarApiResponseData";
+import {MyContext} from "../bot";
 
-export class Jar{
+export class JarService {
     private ctx: MyContext;
     private jarApi: JarAPI;
 

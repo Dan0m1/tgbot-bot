@@ -1,4 +1,4 @@
-import {User} from "../../lib/data/User";
+import {User} from "../../lib/data/custom/User";
 import {Context} from "grammy";
 
 export async function buildUserPayloadFromCtx(ctx: Context) {

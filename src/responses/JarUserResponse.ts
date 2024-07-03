@@ -1,9 +1,11 @@
-import {MyContext} from "../../bot";
+import {MyContext} from "../bot";
+import {ResponseError} from "./ResponseError";
 
-export class JarUserResponse {
-    private ctx: MyContext;
+export class JarUserResponse extends ResponseError{
+    protected ctx: MyContext;
 
     constructor(ctx: MyContext) {
+        super(ctx);
         this.ctx = ctx;
     }
 
@@ -14,9 +16,4 @@ export class JarUserResponse {
     public async successfullyUpdated() {
         await this.ctx.reply(`Успішно оновлено.`);
     }
-
-    public async displayError(response: any){
-        await this.ctx.reply(response.message);
-    }
-
 }
