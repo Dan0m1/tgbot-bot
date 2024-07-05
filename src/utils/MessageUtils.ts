@@ -1,24 +1,22 @@
 import {Context} from "grammy";
 import {User} from "../../lib/data/custom/User";
 import {MentionEntity} from "../../lib/data/custom/MentionEntity";
+import {MyContext} from "../bot";
 
 export class MessageUtils {
-    private lastUserIndex = -1;
-    private ctx: Context;
+    private lastUserIndex: number;
 
-    constructor(ctx:Context){
-        this.ctx = ctx;
+    constructor(){
     }
 
-    public async getMentionedUsers(): Promise<User[]>{
-        const messageEntities: MentionEntity[] = await this.getMessageEntities();
-        const mentionedUsers: User[] = await this.extractUsersFromEntities(messageEntities);
-
-        return mentionedUsers;
+    public async getMentionedUsers(ctx: MyContext): Promise<User[]>{
+        this.lastUserIndex = -1;
+        const messageEntities: MentionEntity[] = await this.getMessageEntities(ctx);
+        return this.extractUsersFromEntities(messageEntities);
     }
 
-    private async getMessageEntities() {
-        const entities: MentionEntity[] = this.ctx.entities(['mention','text_mention']);
+    private async getMessageEntities(ctx: MyContext): Promise<MentionEntity[]>{
+        const entities: MentionEntity[] = ctx.entities(['mention','text_mention']);
         if(entities){
             return entities;
         }
@@ -48,22 +46,22 @@ export class MessageUtils {
         })
     }
 
-    public async getTextWithoutUsernames(): Promise<string>{
+    public async getTextWithoutUsernames(ctx: MyContext): Promise<string>{
         if(this.lastUserIndex == -1){
             return null;
         }
-        return this.ctx.message.text.slice(this.lastUserIndex).trim();
+        return ctx.message.text.slice(this.lastUserIndex).trim();
     }
 
-    public async getNumberInText(): Promise<number>{
-        const regExp = new RegExp(/\b\d+\b/g)
-        return +this.ctx.message.text.match(regExp)[0];
+    public async getNumberInText(ctx: MyContext): Promise<number>{
+        const regExp: RegExp = new RegExp(/\b\d+\b/g)
+        return +ctx.message.text.match(regExp)[0];
     }
 
-    public async getNames(): Promise<string[]>{
-        const regExp = new RegExp(/\[.+\]/)
-        const msgText = this.ctx.message.text;
-        const stringWithNames = msgText.match(regExp)[0].slice(1,-1);
+    public async getNames(ctx: MyContext): Promise<string[]>{
+        const regExp: RegExp = new RegExp(/\[.+\]/)
+        const msgText: string = ctx.message.text;
+        const stringWithNames: string = msgText.match(regExp)[0].slice(1,-1);
         return stringWithNames.trim().split(" ");
     }
 }

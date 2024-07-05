@@ -1,18 +1,15 @@
-import {ResponseError} from "./ResponseError";
+import {DefaultResponse} from "./DefaultResponse";
 import {MyContext} from "../bot";
 import {ListCellSingleApiResponseData} from "../../lib/data/apiResponses/ListCellSingleApiResponseData";
 import {InlineKeyboard} from "grammy";
 
-export class ListCellResponse extends ResponseError{
-    protected ctx: MyContext;
-
-    constructor(ctx: MyContext) {
-        super(ctx);
-        this.ctx = ctx;
+export class ListCellResponse extends DefaultResponse{
+    constructor() {
+        super();
     }
 
-    async displayCell(cell: ListCellSingleApiResponseData, inline: InlineKeyboard){
-        let payload = "";
+    async displayCell(ctx: MyContext, cell: ListCellSingleApiResponseData, inline: InlineKeyboard){
+        let payload: string = "";
         payload += `Назва: ${cell.item}\n`;
         if(cell.amount){
             payload += `Кількість: ${cell.amount}\n`;
@@ -20,15 +17,17 @@ export class ListCellResponse extends ResponseError{
         if(cell.assignee){
             payload += `Доручено: ${cell.assignee}\n`;
         }
-        if (cell.isDone) {
+        if (cell.isDone){
             payload += "Виконано: ✔️\n"
         }else{
             payload += "Виконано: ❌\n"
         }
-        await this.ctx.reply(payload, {reply_markup: inline});
-    }
-
-    async successfullyDeleted(chatId: number, msgId: number){
-        await this.ctx.api.editMessageText(chatId, msgId, "Видалено", {reply_markup: null});
+        const msg = await ctx.reply(payload, {reply_markup: inline});
+        setTimeout( async() =>{
+            try {
+                await ctx.api.deleteMessage(msg.chat.id, msg.message_id)
+            }
+            catch(err){}
+        }, 120000)
     }
 }

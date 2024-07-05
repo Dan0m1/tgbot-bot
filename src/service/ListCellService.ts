@@ -4,9 +4,7 @@ import {InlineKeyboard} from "grammy";
 import {ListCellSingleApiResponseData} from "../../lib/data/apiResponses/ListCellSingleApiResponseData";
 
 export class ListCellService {
-    private listCellApi: ListCellAPI
-    constructor() {
-        this.listCellApi = new ListCellAPI();
+    constructor(private listCellApi: ListCellAPI) {
     }
 
     async getOneById(id: number): Promise<ListCellSingleApiResponseData>{

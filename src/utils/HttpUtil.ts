@@ -1,18 +1,11 @@
-import axios, {AxiosError, AxiosRequestConfig} from "axios";
+import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
+import {HttpUtilMaybeResponse} from "../../lib/data/custom/HttpUtilMaybeResponse";
 
 export class HttpUtil {
-
-    private options: {
-        method: string,
-        url: string,
-        headers: any,
-        data: any
-    };
-
-    public async request() {
+    public async request(data: any, method: string, endpoint: string): Promise<HttpUtilMaybeResponse>{
         try{
-            console.log(this.options)
-            const response = await axios.request(this.options);
+            const options: AxiosRequestConfig = await this.configure(data, method, endpoint);
+            const response: AxiosResponse = await axios.request(options);
             return response.data;
         }
         catch (error: any) {
@@ -27,24 +20,24 @@ export class HttpUtil {
         }
     }
 
-    public async configure(data: any, method: string, endpoint: string){
-        this.options = await this.getOptions()
-        this.options.method = method;
-        this.options.url = this.options.url + endpoint;
+    private async configure(data: any, method: string, endpoint: string): Promise<AxiosRequestConfig> {
+        const options: AxiosRequestConfig = await this.getBlankOptions()
+        options.method = method;
+        options.url = options.url + endpoint;
         if(method == 'POST' || method == 'PUT' || method == 'DELETE'){
-            this.options.data = data;
+            options.data = data;
         }
         if(method == 'GET'){
-            this.options.url = this.options.url + "?";
+            options.url = options.url + "?";
             for(let key in data){
-                // @ts-ignore
-                this.options.url = this.options.url + key + "=" + data[key]?.toString() + "&";
+                options.url = options.url + key + "=" + data[key]?.toString() + "&";
             }
-            this.options.url = this.options.url.slice(0, this.options.url.length-1);
+            options.url = options.url.slice(0, options.url.length-1);
         }
+        return options;
     }
 
-    private async getOptions(){
+    private async getBlankOptions(): Promise<AxiosRequestConfig>{
         return  {
             method: "",
             url: process.env.BACKEND_URL,

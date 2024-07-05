@@ -1,4 +1,3 @@
-import {MyContext} from "../bot";
 import {ListApiResponseData} from "../../lib/data/apiResponses/ListApiResponseData";
 import {ListAPI} from "../../lib/api/ListAPI";
 import {InlineKeyboard} from "grammy";
@@ -7,15 +6,13 @@ import {CreateListDTO} from "../../lib/data/DTOs/CreateListDTO";
 import {DeleteListDTO} from "../../lib/data/DTOs/DeleteListDTO";
 
 export class ListService {
-    private ctx: MyContext;
-    private listApi: ListAPI;
-
-    constructor(ctx: MyContext) {
-        this.ctx = ctx;
-        this.listApi = new ListAPI();
+    constructor(private listApi: ListAPI) {
     }
 
     async addNew(data: CreateListDTO): Promise<void> {
+        if (!/[a-zA-Z0-9]+/.test(data.title)){
+            throw new Error("Назва списку обов'язково повинна складатись лише з латинських літер.")
+        }
         const list = await this.listApi.create(data);
         if(!list){
             throw new Error("Помилка створення списку.")

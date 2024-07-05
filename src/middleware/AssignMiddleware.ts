@@ -1,10 +1,9 @@
-import {Composer, Context, NextFunction} from "grammy";
-import {AssignService} from "../service/AssignService";
-import {AssignResponse} from "../responses/AssignResponse";
+import {Composer, NextFunction} from "grammy";
 import {MyContext} from "../bot";
 import {UserWithTasksApiResponseData} from "../../lib/data/apiResponses/UserWithTasksApiResponseData";
+import {assignResponse, assignService} from "../init/AssignInit";
 
-export const assignMiddleware = new Composer<MyContext>()
+export const assignMiddleware: Composer<MyContext> = new Composer<MyContext>()
 
 assignMiddleware.command(
     "assign_to",
@@ -23,32 +22,31 @@ assignMiddleware.command(
     async (ctx: MyContext, next: NextFunction)=> await tryExecuteRelatedFunction(ctx, deleteAssignEntry)
 )
 
-async function tryExecuteRelatedFunction(ctx: MyContext, fn: (ctx: MyContext, assignService: AssignService) => Promise<any>){
-    const assignService: AssignService = new AssignService(ctx);
+async function tryExecuteRelatedFunction(ctx: MyContext, fn: (ctx: MyContext) => Promise<void>): Promise<void> {
     try {
-        await fn(ctx, assignService);
+        await fn(ctx);
     }catch(err){
-        await new AssignResponse(ctx).displayError(err);
+        await assignResponse.displayError(ctx, err);
     }
 }
 
-async function assignTo(ctx: MyContext, assignService: AssignService) {
-    const response = await assignService.assignToMembers();
-    await new AssignResponse(ctx).successfullyAssigned();
+async function assignTo(ctx: MyContext): Promise<void>{
+    await assignService.assignToMembers(ctx);
+    await assignResponse.successfullyCreated(ctx);
 }
 
-async function assignedToMe(ctx: MyContext, assignService: AssignService){
-    const response: UserWithTasksApiResponseData = await assignService.assignedToMe();
-    await new AssignResponse(ctx).displayAssignedToUser(response);
+async function assignedToMe(ctx: MyContext): Promise<void>{
+    const response: UserWithTasksApiResponseData = await assignService.assignedToMe(ctx);
+    await assignResponse.displayAssignedToUser(ctx, response);
 }
 
-async function checkAssignedTo(ctx: MyContext, assignService: AssignService){
-    const response: UserWithTasksApiResponseData = await assignService.checkAssignedToUser();
-    await new AssignResponse(ctx).displayAssignedToUser(response);
+async function checkAssignedTo(ctx: MyContext): Promise<void>{
+    const response: UserWithTasksApiResponseData = await assignService.checkAssignedToUser(ctx);
+    await assignResponse.displayAssignedToUser(ctx, response);
 }
 
-async function deleteAssignEntry(ctx: MyContext, assignService: AssignService){
-    const response = await assignService.deleteEntry();
-    await new AssignResponse(ctx).successfullyDeleted(response);
+async function deleteAssignEntry(ctx: MyContext): Promise<void>{
+    const response = await assignService.deleteEntry(ctx);
+    await assignResponse.successfullyDeleted(ctx, response);
 }
 

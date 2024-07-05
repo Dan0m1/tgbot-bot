@@ -1,9 +1,9 @@
-import {Composer, NextFunction} from "grammy";
+import {Composer, InlineKeyboard, NextFunction} from "grammy";
 import {MyContext} from "../bot";
-import {ListService} from "../service/ListService";
-import {ListResponse} from "../responses/ListResponse";
+import {listService, listResponse} from "../init/ListInit";
+import {ListApiResponseData} from "../../lib/data/apiResponses/ListApiResponseData";
 
-export const listMiddleware = new Composer<MyContext>();
+export const listMiddleware: Composer<MyContext> = new Composer<MyContext>();
 
 listMiddleware.command(
     "show_lists",
@@ -19,40 +19,37 @@ listMiddleware.command(
 )
 
 listMiddleware.callbackQuery(
-    /list-title=[a-zA-Z0-9а-яА-Я_і]+/g,
+    /list-title=[a-zA-Z0-9]+/g,
     async (ctx: MyContext, next: NextFunction) => tryExecuteRelatedFunction(ctx, showListByTitle)
 )
-async function tryExecuteRelatedFunction(ctx: MyContext, fn: (ctx: MyContext, listService: ListService) => Promise<any>){
-    const listService: ListService = new ListService(ctx);
+async function tryExecuteRelatedFunction(ctx: MyContext, fn: (ctx: MyContext) => Promise<void>): Promise<void>{
     try {
-        await fn(ctx, listService);
+        await fn(ctx);
     }catch(err){
-        await new ListResponse(ctx).displayError(err);
+        await listResponse.displayError(ctx, err);
     }
 }
 
-async function showLists(ctx: MyContext, listService: ListService){
-    const listsInline = await listService.getListsInline();
-    await new ListResponse(ctx).displayLists(listsInline);
+async function showLists(ctx: MyContext): Promise<void>{
+    const listsInline: InlineKeyboard = await listService.getListsInline();
+    await listResponse.displayLists(ctx, listsInline);
 }
 
-async function addList(ctx: MyContext, listService: ListService){
-    const title = ctx.match as string;
+async function addList(ctx: MyContext): Promise<void>{
+    const title: string = ctx.match as string;
     await listService.addNew({title});
-    await new ListResponse(ctx).successfullyCreated(title);
+    await listResponse.successfullyCreated(ctx, title);
 }
 
-async function deleteList(ctx: MyContext, listService: ListService){
-    const title = ctx.match as string;
+async function deleteList(ctx: MyContext): Promise<void>{
+    const title: string = ctx.match as string;
     await listService.delete({title});
-    await new ListResponse(ctx).successfullyDeleted(title);
+    await listResponse.successfullyDeleted(ctx, title);
 }
 
-async function showListByTitle(ctx: MyContext, listService: ListService) {
+async function showListByTitle(ctx: MyContext): Promise<void>{
     await ctx.answerCallbackQuery();
-    if(ctx.callbackQuery.data){
-        const title = ctx.callbackQuery.data.slice(11);        // data = "list-title=" + list.title
-        const list = await listService.getListByTitle(title);
-        await new ListResponse(ctx).displaySingleList(list);
-    }
+    const title: string = ctx.callbackQuery.data.slice(11);        // data = "list-title=" + list.title
+    const list: ListApiResponseData = await listService.getListByTitle(title);
+    await listResponse.displaySingleList(ctx, list);
 }

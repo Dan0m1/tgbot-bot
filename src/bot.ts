@@ -37,7 +37,7 @@ async function bootstrap(){
     console.log("Бот працює.")
 
     bot.catch((err) => {
-        const ctx = err.ctx;
+        const ctx: MyContext = err.ctx;
         console.error(`Error while handling update ${ctx.update.update_id}:`);
         const e = err.error;
 

@@ -1,34 +1,43 @@
-import {ResponseError} from "./ResponseError";
+import {DefaultResponse} from "./DefaultResponse";
 import {MyContext} from "../bot";
 import {InlineKeyboard} from "grammy";
 import {ListApiResponseData} from "../../lib/data/apiResponses/ListApiResponseData";
 
-export class ListResponse extends ResponseError {
-    protected ctx: MyContext;
-
-    constructor(ctx: MyContext) {
-        super(ctx);
-        this.ctx = ctx;
+export class ListResponse extends DefaultResponse {
+    constructor() {
+        super();
     }
 
-    async successfullyCreated(title: string){
-        await this.ctx.reply(`Список \"${title}\" успішно створено.`)
+    override async successfullyCreated(ctx: MyContext, ...args: any[]): Promise<void>{
+        await ctx.reply(`Список \"${args[0]}\" успішно створено.`)
     }
 
-    async successfullyDeleted(title: string){
-        await this.ctx.reply(`Список \"${title}\" успішно видалено.`)
+    override async successfullyDeleted(ctx: MyContext, ...args: any[]): Promise<void>{
+        await ctx.reply(`Список \"${args[0]}\" успішно видалено.`)
     }
 
-    async displayLists(inlineKeyboard: InlineKeyboard){
-        await this.ctx.reply("Оберіть список:", {reply_markup: inlineKeyboard})
+    async displayLists(ctx: MyContext, inlineKeyboard: InlineKeyboard): Promise<void>{
+        const msg = await ctx.reply("Оберіть список:", {reply_markup: inlineKeyboard})
+        setTimeout( async() =>{
+            try {
+                await ctx.api.deleteMessage(msg.chat.id, msg.message_id)
+            }
+            catch(err){}
+        }, 120000)
     }
 
-    async displaySingleList(list: ListApiResponseData){
-        const payload = await this.buildListPayload(list);
-        await this.ctx.reply(payload, {parse_mode: "MarkdownV2", reply_markup: new InlineKeyboard().text("Додати запис",`listCell-add-title=${list.title}`)});
+    async displaySingleList(ctx: MyContext, list: ListApiResponseData): Promise<void>{
+        const payload: string = this.buildListPayload(list);
+        const msg = await ctx.reply(payload, {parse_mode: "MarkdownV2", reply_markup: new InlineKeyboard().text("Додати запис",`listCell-add-title=${list.title}`)});
+        setTimeout( async() =>{
+            try {
+                await ctx.api.deleteMessage(msg.chat.id, msg.message_id)
+            }
+            catch(err){}
+        }, 120000)
     }
 
-    async buildListPayload(list: ListApiResponseData){
+    buildListPayload(list: ListApiResponseData): string{
         let payload: string = `*${list.title}*\n`;
         if(!list.cells || list.cells.length == 0){
             payload += "Список пустий\\.";

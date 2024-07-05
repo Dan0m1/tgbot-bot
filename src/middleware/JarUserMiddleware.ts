@@ -1,10 +1,8 @@
-import {Composer, Context} from "grammy";
-import {JarUserService} from "../service/JarUserService";
-import {JarUserResponse} from "../responses/JarUserResponse";
-import {JarUserApiResponseData} from "../../lib/data/apiResponses/JarUserApiResponseData";
+import {Composer} from "grammy";
 import {MyContext} from "../bot";
+import {jarUserService, jarUserResponse} from "../init/JarUserInit";
 
-export const jarUserMiddleware = new Composer<MyContext>()
+export const jarUserMiddleware: Composer<MyContext> = new Composer<MyContext>()
 
 jarUserMiddleware.command(
     "extort_from",
@@ -15,21 +13,20 @@ jarUserMiddleware.command(
     async (ctx: MyContext, next) => await tryExecuteRelatedFunction(ctx, changeJarUser)
 )
 
-async function tryExecuteRelatedFunction(ctx: MyContext, fn: (ctx: MyContext, jarUserService: JarUserService) => Promise<any>){
-    const jarUserService: JarUserService = new JarUserService(ctx);
+async function tryExecuteRelatedFunction(ctx: MyContext, fn: (ctx: MyContext) => Promise<void>): Promise<void>{
     try {
-        await fn(ctx, jarUserService);
+        await fn(ctx);
     }catch(err){
-        await new JarUserResponse(ctx).displayError(err);
+        await jarUserResponse.displayError(ctx, err);
     }
 }
 
-async function addJarUsers(ctx: MyContext, jarUserService: JarUserService){
-    const response: JarUserApiResponseData[] = await jarUserService.create();
-    await new JarUserResponse(ctx).successfullyAdded();
+async function addJarUsers(ctx: MyContext): Promise<void>{
+    await jarUserService.create(ctx);
+    await jarUserResponse.successfullyCreated(ctx);
 }
 
-async function changeJarUser(ctx: MyContext, jarUserService: JarUserService){
-    await jarUserService.update();
-    await new JarUserResponse(ctx).successfullyUpdated();
+async function changeJarUser(ctx: MyContext): Promise<void>{
+    await jarUserService.update(ctx);
+    await jarUserResponse.successfullyUpdated(ctx);
 }

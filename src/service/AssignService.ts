@@ -9,70 +9,62 @@ import {
     buildUserPayloadFromUser,
 } from "../utils/BuildUserPayloadUtil";
 import {MyContext} from "../bot";
+import {TaskApiResponseData} from "../../lib/data/apiResponses/TaskApiResponseData";
+import {UserWithTasksApiResponseData} from "../../lib/data/apiResponses/UserWithTasksApiResponseData";
 
 export class AssignService {
-    private messageUtils: MessageUtils;
-    private assignAdapter: AssignDataAdapter = new AssignDataAdapter();
-    private userApi: UserAPI;
-    private taskApi: TaskAPI;
-    private ctx: MyContext;
-
-    constructor(ctx: MyContext) {
-        this.messageUtils = new MessageUtils(ctx);
-        this.userApi = new UserAPI();
-        this.taskApi = new TaskAPI();
-        this.ctx = ctx;
+    constructor(private userApi: UserAPI, private taskApi: TaskAPI,
+                private messageUtils: MessageUtils, private assignAdapter: AssignDataAdapter) {
     }
 
-    public async assignToMembers(){
-        const users: User[] = await this.messageUtils.getMentionedUsers();
+    public async assignToMembers(ctx: MyContext): Promise<TaskApiResponseData> {
+        const users: User[] = await this.messageUtils.getMentionedUsers(ctx);
         if(!users || users.length == 0){
             throw new Error("Відсутні тегнуті користувачі")
         }
-        const text: string = await this.messageUtils.getTextWithoutUsernames();
+        const text: string = await this.messageUtils.getTextWithoutUsernames(ctx);
         if(!text){
             throw new Error("Відсутнє завдання")
         }
         const data: CreateTasksDTO = await this.assignAdapter.buildData(users, text);
-        const apiResponse = await this.taskApi.create(data);
-        return apiResponse;
+        return this.taskApi.create(data);
     }
 
-    public async assignedToMe(){
-        const user = await buildUserPayloadFromCtx(this.ctx)
-        const apiResponse = await this.userApi.getAllAssignedToUser(user);
+    public async assignedToMe(ctx: MyContext){
+        const user: User = await buildUserPayloadFromCtx(ctx)
+        const apiResponse: UserWithTasksApiResponseData = await this.userApi.getAllAssignedToUser(user);
         if(!apiResponse || apiResponse.tasks.length == 0){
             throw new Error(`Для Вас відсутні завдання`)
         }
         return apiResponse;
     }
 
-    public async checkAssignedToUser(){
-        const user: User = (await this.messageUtils.getMentionedUsers())[0];
+    public async checkAssignedToUser(ctx: MyContext){
+        const user: User = (await this.messageUtils.getMentionedUsers(ctx))[0];
         if(!user){
             throw new Error(`Відсутні тегнуті користувачі`);
         }
-        const payload = await buildUserPayloadFromUser(user)
-        const apiResponse = await this.userApi.getAllAssignedToUser(payload);
+        const payload: User = await buildUserPayloadFromUser(user)
+        const apiResponse: UserWithTasksApiResponseData = await this.userApi.getAllAssignedToUser(payload);
         if(!apiResponse || apiResponse.tasks.length == 0){
             throw new Error(`Для користувача відсутні завдання`)
         }
         return apiResponse;
     }
 
-    public async deleteEntry(){
-        const user = (await this.messageUtils.getMentionedUsers())[0];
-        const entryId = await this.messageUtils.getNumberInText();
+    public async deleteEntry(ctx: MyContext){
+        const user: User = (await this.messageUtils.getMentionedUsers(ctx))[0];
+        const entryId: number = await this.messageUtils.getNumberInText(ctx);
         if(!user){
             throw new Error(`Відсутні тегнуті користувачі`);
         }
-        const payload = await buildUserPayloadFromUser(user)
-        const apiResponse = await this.userApi.getAllAssignedToUser(payload)
+        const payload: User = await buildUserPayloadFromUser(user)
+        const apiResponse: UserWithTasksApiResponseData = await this.userApi.getAllAssignedToUser(payload)
 
         if(!apiResponse || apiResponse.tasks.length == 0){
             throw new Error(`Для користувача відсутні завдання`)
         }
-        const targetTask = apiResponse.tasks.find((task, index) => index === entryId-1);
+        const targetTask: TaskApiResponseData = apiResponse.tasks.find((task, index) => index === entryId-1);
         await this.taskApi.deleteEntry(targetTask.id);
     }
 }
