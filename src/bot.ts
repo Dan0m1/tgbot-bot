@@ -6,7 +6,7 @@ import {
     type ConversationFlavor,
     conversations,
 } from "@grammyjs/conversations";
-import Configuration from "../lib/config/Configuration";
+
 import {assignMiddleware} from "./middleware/AssignMiddleware";
 import {jarMiddleware} from "./middleware/JarMiddleware";
 import {jarUserMiddleware} from "./middleware/JarUserMiddleware";
@@ -21,7 +21,7 @@ export type MyContext = Context & SessionFlavor<SessionData> & ConversationFlavo
 export type MyConversation = Conversation<MyContext>;
 
 async function bootstrap(){
-    const bot = new Bot<MyContext>(Configuration().botToken);
+    const bot = new Bot<MyContext>(process.env.BOT_TOKEN);
 
     bot.use(session({ initial: () => ({}) }));
     bot.use(conversations());
