@@ -26,11 +26,13 @@ defaultMiddleware.command(
 )
 
 async function start(ctx: MyContext): Promise<void> {
+    await deleteOutdatedMsg(ctx, ctx.msg, 800);
     await ctx.reply("Привіт. Гачі розкумар вже близько)\nДавай готуватись!");
     await ctx.reply("*/help* \\- для опису взаємодії з ботом", {parse_mode: "MarkdownV2"});
 }
 
 async function help(ctx: MyContext): Promise<void> {
+    await deleteOutdatedMsg(ctx, ctx.msg, 800);
     const msg = await ctx.reply("Корисні команди:\n" +
         "*/jar* \\- показати відомості про банку для збору грошей\n" +
         "*/show\\_lists* \\- показати меню списків\n" +
@@ -42,6 +44,7 @@ async function help(ctx: MyContext): Promise<void> {
 }
 
 async function helpLists(ctx: MyContext): Promise<void> {
+    await deleteOutdatedMsg(ctx, ctx.msg, 800);
     const msg = await ctx.reply("Команди для списків:\n" +
         "*/add\\_list* *_назва\\_латинськими\\_літерами_* \\- додати новий список\n" +
         "*/delete\\_list* *_назва\\_існуючого\\_списку_* \\- видалити існуючий список\n"
@@ -50,6 +53,7 @@ async function helpLists(ctx: MyContext): Promise<void> {
 }
 
 async function helpAssign(ctx: MyContext): Promise<void> {
+    await deleteOutdatedMsg(ctx, ctx.msg, 800);
     const msg = await ctx.reply("Команди для вимагання грошей:\n" +
         "*/assign\\_to* *_тегнути\\_користувачів_* *_зміст\\_завдання_* \\- призначити завдання для тегнутих слейвів\n" +
         "*/delete\\_entry* *_тегнути\\_користувача_* *_номер\\_завдання_* \\- видалити відповідне завдання\n" +
@@ -60,6 +64,7 @@ async function helpAssign(ctx: MyContext): Promise<void> {
 }
 
 async function helpExtort(ctx: MyContext): Promise<void> {
+    await deleteOutdatedMsg(ctx, ctx.msg, 800);
     const msg = await ctx.reply("Команди для вимагання грошей:\n" +
         "*/extort\\_from* *\\[_перелік\\_імен_\\]* *_сума_* \\- вимагати гроші у перелічених слейвів\n" +
         "*/change\\_extort* *\\[_перелік\\_імен_\\]* *_сума_* \\- змінити суму вимагання у перелічених слейвів\n"

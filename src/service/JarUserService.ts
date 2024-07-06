@@ -14,6 +14,9 @@ export class JarUserService {
             throw new Error("Неправильний формат вводу імен.\nЗразок: [ім'я ім'я ім'я]")
         }
         const moneyGoal: number = await this.messageUtils.getNumberInText(ctx);
+        if(!moneyGoal || moneyGoal < 0){
+            throw new Error("Неправильний формат вводу суми. /help_extort")
+        }
         const jarUserPayload: CreateJarUserDTO[] = names.map((name):CreateJarUserDTO => {
             return {
                 name,
@@ -45,17 +48,20 @@ export class JarUserService {
     }
 
     async update(ctx: MyContext): Promise<void>{
-        const names: string[] = await this.messageUtils.getNames(ctx);
-        const moneyGoal: number = await this.messageUtils.getNumberInText(ctx);
-        const jarUserPayload: CreateJarUserDTO[] = names.map((name):CreateJarUserDTO => {
-            return {
-                name,
-                moneyGoal: moneyGoal*100
+        try {
+            const names: string[] = await this.messageUtils.getNames(ctx);
+            const moneyGoal: number = await this.messageUtils.getNumberInText(ctx);
+            const jarUserPayload: CreateJarUserDTO[] = names.map((name): CreateJarUserDTO => {
+                return {
+                    name,
+                    moneyGoal: moneyGoal * 100
+                }
+            })
+            for(const data of jarUserPayload){
+                await this.jarUserApi.updateJarUser(data);
             }
-        })
-
-        for(const data of jarUserPayload){
-            await this.jarUserApi.updateJarUser(data);
+        } catch (error: unknown){
+            throw new Error("Помилка формату даних.\nВпевніться, що Ви ввели команду відповідно до вказаного формату /help_extort")
         }
     }
 }

@@ -7,7 +7,8 @@ export class DefaultResponse {
     constructor() {}
 
     public async displayError(ctx: MyContext ,error: any){
-        await ctx.reply(error.message);
+        const msg = await ctx.reply(error.message);
+        await deleteOutdatedMsg(ctx, msg, this.timeoutTime);
     }
 
     public async successfullyCreated(ctx: MyContext, ...args: any[]): Promise<void>{

@@ -1,9 +1,10 @@
-import {Composer, InlineKeyboard, NextFunction} from "grammy";
+import {Composer, InlineKeyboard} from "grammy";
 import {MyContext} from "../bot";
 import {add, update} from "../conversations/ListCellConversations";
 import {createConversation} from "@grammyjs/conversations";
 import {listCellService, listCellResponse} from "../init/ListCellInit";
 import {ListCellSingleApiResponseData} from "../../lib/data/apiResponses/ListCellSingleApiResponseData";
+import {deleteOutdatedMsg} from "../utils/DeleteOutdatedMessageUtil";
 
 export const listCellMiddleware: Composer<MyContext> = new Composer<MyContext>();
 listCellMiddleware.use(createConversation(update));
@@ -11,20 +12,20 @@ listCellMiddleware.use(createConversation(add));
 
 listCellMiddleware.on("msg:text").filter(
     (ctx: MyContext) => checkIfListCellRequested(ctx),
-    async (ctx: MyContext, next: NextFunction) => tryExecuteRelatedFunction(ctx, showCell)
+    async (ctx: MyContext) => tryExecuteRelatedFunction(ctx, showCell)
 )
 
 listCellMiddleware.callbackQuery(
     /(?<=listCell-update=)\d+/g,
-    async (ctx: MyContext, next: NextFunction) => tryExecuteRelatedFunction(ctx, updateCell)
+    async (ctx: MyContext) => tryExecuteRelatedFunction(ctx, updateCell)
 )
 listCellMiddleware.callbackQuery(
     /(?<=listCell-delete=)\d+/g,
-    async (ctx: MyContext, next: NextFunction) => tryExecuteRelatedFunction(ctx, deleteCell)
+    async (ctx: MyContext) => tryExecuteRelatedFunction(ctx, deleteCell)
 )
 listCellMiddleware.callbackQuery(
     /(?<=listCell-add-title=)[a-zA-Z0-9]+/g,
-    async (ctx: MyContext, next: NextFunction) => tryExecuteRelatedFunction(ctx, addCell)
+    async (ctx: MyContext) => tryExecuteRelatedFunction(ctx, addCell)
 )
 
 async function tryExecuteRelatedFunction(ctx: MyContext, fn: (ctx: MyContext) => Promise<void>): Promise<void>{
@@ -36,6 +37,7 @@ async function tryExecuteRelatedFunction(ctx: MyContext, fn: (ctx: MyContext) =>
 }
 
 async function showCell(ctx: MyContext): Promise<void>{
+    await deleteOutdatedMsg(ctx, ctx.msg, 800);
     const data: string[] = ctx.msg.text?.split("_");
     const cellId: number = parseInt(data[3]);
     const cell: ListCellSingleApiResponseData = await listCellService.getOneById(cellId);

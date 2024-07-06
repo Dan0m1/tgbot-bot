@@ -1,4 +1,3 @@
-import {Context} from "grammy";
 import {User} from "../../lib/data/custom/User";
 import {MentionEntity} from "../../lib/data/custom/MentionEntity";
 import {MyContext} from "../bot";
@@ -55,12 +54,19 @@ export class MessageUtils {
 
     public async getNumberInText(ctx: MyContext): Promise<number>{
         const regExp: RegExp = new RegExp(/\b\d+\b/g)
-        return +ctx.message.text.match(regExp)[0];
+        const msgText: string = ctx.match as string;
+        if(!regExp.test(msgText)){
+            throw new Error("Помилка вводу суми. /help_extort");
+        }
+        return +msgText.match(regExp)[0];
     }
 
     public async getNames(ctx: MyContext): Promise<string[]>{
         const regExp: RegExp = new RegExp(/\[.+\]/)
-        const msgText: string = ctx.message.text;
+        const msgText: string = ctx.match as string;
+        if(!regExp.test(msgText)){
+            throw new Error("Помилка вводу імен. /help_extort");
+        }
         const stringWithNames: string = msgText.match(regExp)[0].slice(1,-1);
         return stringWithNames.trim().split(" ");
     }
