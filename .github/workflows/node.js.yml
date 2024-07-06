@@ -24,6 +24,7 @@ jobs:
   start:
 
     runs-on: self-hosted
+    needs: build
 
     steps:
       - run: pm2 restart all
