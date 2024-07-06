@@ -1,20 +1,18 @@
-import {listMiddleware} from "./middleware/ListMiddleware";
-
-require('dotenv').config();
+require('dotenv').config("/var/www/vacationbot/_work/.env");
 import {Bot, Context, GrammyError, HttpError,  session, SessionFlavor} from "grammy";
 import {run} from "@grammyjs/runner";
-import {assignMiddleware} from "./middleware/AssignMiddleware";
-import {jarMiddleware} from "./middleware/JarMiddleware";
-import {jarUserMiddleware} from "./middleware/JarUserMiddleware";
-import Configuration from "../lib/config/Configuration";
 import {
     type Conversation,
     type ConversationFlavor,
     conversations,
-    createConversation,
 } from "@grammyjs/conversations";
+import Configuration from "../lib/config/Configuration";
+import {assignMiddleware} from "./middleware/AssignMiddleware";
+import {jarMiddleware} from "./middleware/JarMiddleware";
+import {jarUserMiddleware} from "./middleware/JarUserMiddleware";
+import {listMiddleware} from "./middleware/ListMiddleware";
 import {listCellMiddleware} from "./middleware/ListCellMiddleware";
-
+import {defaultMiddleware} from "./middleware/DefaultMiddleware";
 
 interface SessionData {
 }
@@ -22,12 +20,12 @@ interface SessionData {
 export type MyContext = Context & SessionFlavor<SessionData> & ConversationFlavor;
 export type MyConversation = Conversation<MyContext>;
 
-// @ts-ignore
 async function bootstrap(){
     const bot = new Bot<MyContext>(Configuration().botToken);
 
     bot.use(session({ initial: () => ({}) }));
     bot.use(conversations());
+    bot.use(defaultMiddleware);
     bot.use(assignMiddleware);
     bot.use(jarMiddleware);
     bot.use(jarUserMiddleware);

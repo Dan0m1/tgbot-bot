@@ -3,6 +3,7 @@ import {InlineKeyboard} from "grammy";
 import {CreateListCellDTO} from "../../lib/data/DTOs/CreateListCellDTO";
 import {listCellApi} from "../init/ListCellInit";
 import {listResponse, listService} from "../init/ListInit";
+import {deleteOutdatedMsg} from "../utils/DeleteOutdatedMessageUtil";
 
 export async function update(conversation: MyConversation, ctx: MyContext){
     const inline = new InlineKeyboard()
@@ -19,9 +20,7 @@ export async function update(conversation: MyConversation, ctx: MyContext){
         case "isDone": await updateIsDone(conversation, ctx, cellId); break;
     }
     await ctx.editMessageText("Змінено.", {reply_markup: null});
-    setTimeout(async () => {
-        await ctx.deleteMessage();
-    }, 5000)
+    await deleteOutdatedMsg(ctx, ctx.msg, 5000);
 }
 
 async function updateAmount(conversation: MyConversation, ctx: MyContext, cellId: number){
@@ -68,9 +67,7 @@ export async function add(conversation: MyConversation, ctx: MyContext){
         await listCellApi.createCell(payload);
     });
     const msg = await ctx.reply("Запис успішно створено.");
-    setTimeout(async () => {
-        await ctx.api.deleteMessage(msg.chat.id, msg.message_id);
-    }, 1500);
+    await deleteOutdatedMsg(ctx, msg, 1500);
     setTimeout(async () => {
         await conversation.external(async () => {
             const list = await listService.getListByTitle(title);

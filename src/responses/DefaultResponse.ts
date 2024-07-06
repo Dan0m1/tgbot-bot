@@ -1,7 +1,8 @@
 import {MyContext} from "../bot";
+import {deleteOutdatedMsg} from "../utils/DeleteOutdatedMessageUtil";
 
 export class DefaultResponse {
-    private timeoutTime: number = 5000;
+    private timeoutTime: number = 15000;
 
     constructor() {}
 
@@ -11,22 +12,16 @@ export class DefaultResponse {
 
     public async successfullyCreated(ctx: MyContext, ...args: any[]): Promise<void>{
         const msg = await ctx.reply(`Успішно створено.`);
-        setTimeout(async () => {
-            await ctx.api.deleteMessage(msg.chat.id, msg.message_id);
-        }, this.timeoutTime)
+        await deleteOutdatedMsg(ctx, msg, this.timeoutTime);
     }
 
     public async successfullyUpdated(ctx: MyContext, ...args: any[]): Promise<void>{
         const msg = await ctx.reply(`Успішно оновлено.`);
-        setTimeout(async () => {
-            await ctx.api.deleteMessage(msg.chat.id, msg.message_id);
-        }, this.timeoutTime)
+        await deleteOutdatedMsg(ctx, msg, this.timeoutTime);
     }
 
     public async successfullyDeleted(ctx: MyContext, ...args: any[]): Promise<void>{
         const msg = await ctx.reply(`Успішно видалено.`);
-        setTimeout(async () => {
-            await ctx.api.deleteMessage(msg.chat.id, msg.message_id);
-        }, this.timeoutTime)
+        await deleteOutdatedMsg(ctx, msg, this.timeoutTime);
     }
 }

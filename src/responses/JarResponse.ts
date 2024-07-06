@@ -2,6 +2,8 @@ import {JarApiResponseData} from "../../lib/data/apiResponses/JarApiResponseData
 import {JarUserApiResponseData} from "../../lib/data/apiResponses/JarUserApiResponseData";
 import {MyContext} from "../bot";
 import {DefaultResponse} from "./DefaultResponse";
+import {Message} from "@grammyjs/types";
+import {deleteOutdatedMsg} from "../utils/DeleteOutdatedMessageUtil";
 
 export class JarResponse extends DefaultResponse{
     constructor() {
@@ -15,12 +17,7 @@ export class JarResponse extends DefaultResponse{
                 payload += `\n>${jarUser.name}:\t${jarUser.moneyStatus.replace(".", "\\.")}`;
             }
         }
-        const msg = await ctx.reply(payload, { parse_mode: "MarkdownV2" });
-        setTimeout( async() =>{
-            try {
-                await ctx.api.deleteMessage(msg.chat.id, msg.message_id)
-            }
-            catch(err){}
-        }, 120000)
+        const msg: Message.TextMessage = await ctx.reply(payload, { parse_mode: "MarkdownV2" });
+        await deleteOutdatedMsg(ctx, msg, 120000);
     }
 }

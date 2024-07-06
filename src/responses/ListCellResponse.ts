@@ -2,6 +2,7 @@ import {DefaultResponse} from "./DefaultResponse";
 import {MyContext} from "../bot";
 import {ListCellSingleApiResponseData} from "../../lib/data/apiResponses/ListCellSingleApiResponseData";
 import {InlineKeyboard} from "grammy";
+import {deleteOutdatedMsg} from "../utils/DeleteOutdatedMessageUtil";
 
 export class ListCellResponse extends DefaultResponse{
     constructor() {
@@ -23,11 +24,6 @@ export class ListCellResponse extends DefaultResponse{
             payload += "Виконано: ❌\n"
         }
         const msg = await ctx.reply(payload, {reply_markup: inline});
-        setTimeout( async() =>{
-            try {
-                await ctx.api.deleteMessage(msg.chat.id, msg.message_id)
-            }
-            catch(err){}
-        }, 120000)
+        await deleteOutdatedMsg(ctx, msg, 120000);
     }
 }

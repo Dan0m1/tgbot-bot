@@ -2,6 +2,7 @@ import {DefaultResponse} from "./DefaultResponse";
 import {MyContext} from "../bot";
 import {InlineKeyboard} from "grammy";
 import {ListApiResponseData} from "../../lib/data/apiResponses/ListApiResponseData";
+import {deleteOutdatedMsg} from "../utils/DeleteOutdatedMessageUtil";
 
 export class ListResponse extends DefaultResponse {
     constructor() {
@@ -9,32 +10,24 @@ export class ListResponse extends DefaultResponse {
     }
 
     override async successfullyCreated(ctx: MyContext, ...args: any[]): Promise<void>{
-        await ctx.reply(`Список \"${args[0]}\" успішно створено.`)
+       const msg = await ctx.reply(`Список \"${args[0]}\" успішно створено.`);
+        await deleteOutdatedMsg(ctx, msg, 30000);
     }
 
     override async successfullyDeleted(ctx: MyContext, ...args: any[]): Promise<void>{
-        await ctx.reply(`Список \"${args[0]}\" успішно видалено.`)
+        const msg = await ctx.reply(`Список \"${args[0]}\" успішно видалено.`);
+        await deleteOutdatedMsg(ctx, msg, 30000);
     }
 
     async displayLists(ctx: MyContext, inlineKeyboard: InlineKeyboard): Promise<void>{
         const msg = await ctx.reply("Оберіть список:", {reply_markup: inlineKeyboard})
-        setTimeout( async() =>{
-            try {
-                await ctx.api.deleteMessage(msg.chat.id, msg.message_id)
-            }
-            catch(err){}
-        }, 120000)
+        await deleteOutdatedMsg(ctx, msg, 120000);
     }
 
     async displaySingleList(ctx: MyContext, list: ListApiResponseData): Promise<void>{
         const payload: string = this.buildListPayload(list);
         const msg = await ctx.reply(payload, {parse_mode: "MarkdownV2", reply_markup: new InlineKeyboard().text("Додати запис",`listCell-add-title=${list.title}`)});
-        setTimeout( async() =>{
-            try {
-                await ctx.api.deleteMessage(msg.chat.id, msg.message_id)
-            }
-            catch(err){}
-        }, 120000)
+        await deleteOutdatedMsg(ctx, msg, 120000);
     }
 
     buildListPayload(list: ListApiResponseData): string{
