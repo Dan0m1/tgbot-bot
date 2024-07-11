@@ -4,6 +4,7 @@ import {CreateListCellDTO} from "../../lib/data/DTOs/CreateListCellDTO";
 import {listCellApi} from "../init/ListCellInit";
 import {listResponse, listService} from "../init/ListInit";
 import {deleteOutdatedMsg} from "../utils/DeleteOutdatedMessageUtil";
+import outdatedTimeConfig from "../configuration/outdatedTimeConfig";
 
 export async function update(conversation: MyConversation, ctx: MyContext){
     const inline = new InlineKeyboard()
@@ -20,7 +21,7 @@ export async function update(conversation: MyConversation, ctx: MyContext){
         case "isDone": await updateIsDone(conversation, ctx, cellId); break;
     }
     await ctx.editMessageText("Змінено.", {reply_markup: null});
-    await deleteOutdatedMsg(ctx, ctx.msg, 5000);
+    await deleteOutdatedMsg(ctx, ctx.msg, outdatedTimeConfig().shortLifeTime);
 }
 
 async function updateDescription(conversation: MyConversation, ctx: MyContext, cellId: number){
@@ -67,7 +68,7 @@ export async function add(conversation: MyConversation, ctx: MyContext){
         await listCellApi.createCell(payload);
     });
     const msg = await ctx.reply("Запис успішно створено.");
-    await deleteOutdatedMsg(ctx, msg, 1500);
+    await deleteOutdatedMsg(ctx, msg, outdatedTimeConfig().shortLifeTime);
     setTimeout(async () => {
         await conversation.external(async () => {
             const list = await listService.getListByTitle(title);

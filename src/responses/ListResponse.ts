@@ -11,23 +11,23 @@ export class ListResponse extends DefaultResponse {
 
     override async successfullyCreated(ctx: MyContext, ...args: any[]): Promise<void>{
        const msg = await ctx.reply(`Список \"${args[0]}\" успішно створено.`);
-        await deleteOutdatedMsg(ctx, msg, 30000);
+        await deleteOutdatedMsg(ctx, msg, this.shortLifeTime);
     }
 
     override async successfullyDeleted(ctx: MyContext, ...args: any[]): Promise<void>{
         const msg = await ctx.reply(`Список \"${args[0]}\" успішно видалено.`);
-        await deleteOutdatedMsg(ctx, msg, 30000);
+        await deleteOutdatedMsg(ctx, msg, this.shortLifeTime);
     }
 
     async displayLists(ctx: MyContext, inlineKeyboard: InlineKeyboard): Promise<void>{
         const msg = await ctx.reply("Оберіть список:", {reply_markup: inlineKeyboard})
-        await deleteOutdatedMsg(ctx, msg, 120000);
+        await deleteOutdatedMsg(ctx, msg, this.longLifeTime);
     }
 
     async displaySingleList(ctx: MyContext, list: ListApiResponseData): Promise<void>{
         const payload: string = this.buildListPayload(list);
         const msg = await ctx.reply(payload, {parse_mode: "MarkdownV2", reply_markup: new InlineKeyboard().text("Додати запис",`listCell-add-title=${list.title}`)});
-        await deleteOutdatedMsg(ctx, msg, 120000);
+        await deleteOutdatedMsg(ctx, msg, this.longLifeTime);
     }
 
     buildListPayload(list: ListApiResponseData): string{

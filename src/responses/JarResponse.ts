@@ -18,6 +18,6 @@ export class JarResponse extends DefaultResponse{
             }
         }
         const msg: Message.TextMessage = await ctx.reply(payload, { parse_mode: "MarkdownV2" });
-        await deleteOutdatedMsg(ctx, msg, 120000);
+        await deleteOutdatedMsg(ctx, msg, this.longLifeTime);
     }
 }

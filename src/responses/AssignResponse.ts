@@ -23,6 +23,6 @@ export class AssignResponse extends DefaultResponse{
         else{
             msg = await ctx.reply(`${response.username}\n` + reply)
         }
-        await deleteOutdatedMsg(ctx, msg, 120000);
+        await deleteOutdatedMsg(ctx, msg, this.longLifeTime);
     }
 }
