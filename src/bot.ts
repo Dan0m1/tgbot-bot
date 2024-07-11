@@ -1,4 +1,4 @@
-require('dotenv').config(/*{path:"/var/www/vacationbot/_work/.env"}*/);
+require('dotenv').config({path:"/var/www/vacationbot/_work/.env"});
 import {Bot, Context, GrammyError, HttpError,  session, SessionFlavor} from "grammy";
 import {run} from "@grammyjs/runner";
 import {
