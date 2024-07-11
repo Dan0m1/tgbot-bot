@@ -1,6 +1,6 @@
 export class CreateListCellDTO {
     listTitle: string;
     item: string;
-    amount?: number;
+    description?: string;
     assignee?: string;
 }

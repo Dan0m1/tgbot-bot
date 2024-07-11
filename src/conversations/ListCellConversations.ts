@@ -7,15 +7,15 @@ import {deleteOutdatedMsg} from "../utils/DeleteOutdatedMessageUtil";
 
 export async function update(conversation: MyConversation, ctx: MyContext){
     const inline = new InlineKeyboard()
-        .text("Змінити кількість.", "amount").row()
+        .text("Змінити опис.", "description").row()
         .text("Змінити дорученого.", "assignee").row()
         .text("Змінити статус.", "isDone").row();
     const cellId: number = parseInt(ctx.callbackQuery.data.match(/(?<=listCell-update=)\d+/g)[0]);
     await ctx.editMessageReplyMarkup({reply_markup: inline});
-    const callback = await conversation.waitForCallbackQuery(["amount", "assignee", "isDone"]);
+    const callback = await conversation.waitForCallbackQuery(["description", "assignee", "isDone"]);
     await callback.answerCallbackQuery();
     switch(callback.callbackQuery.data){
-        case "amount": await updateAmount(conversation, ctx, cellId); break;
+        case "description": await updateDescription(conversation, ctx, cellId); break;
         case "assignee": await updateAssignee(conversation, ctx, cellId); break;
         case "isDone": await updateIsDone(conversation, ctx, cellId); break;
     }
@@ -23,18 +23,18 @@ export async function update(conversation: MyConversation, ctx: MyContext){
     await deleteOutdatedMsg(ctx, ctx.msg, 5000);
 }
 
-async function updateAmount(conversation: MyConversation, ctx: MyContext, cellId: number){
-    const amount: number = parseInt(await askAndGetInput(ctx, conversation, "Введіть нову кількість", /^\d+$/));
+async function updateDescription(conversation: MyConversation, ctx: MyContext, cellId: number){
+    const description: string = await askAndGetInput(ctx, conversation, "Введіть новий опис", /^[a-zA-Z0-9а-яА-Я_і\s]+$/);
     await conversation.external(async () => {
         await listCellApi.update({
             id: cellId,
-            amount
+            description
         })
     })
 }
 
 async function updateAssignee(conversation: MyConversation, ctx: MyContext, cellId: number){
-    const assignee = await askAndGetInput(ctx, conversation, "Введіть нового призначеного", /^[a-zA-Z0-9а-яА-Я_і]+$/);
+    const assignee = await askAndGetInput(ctx, conversation, "Введіть нового призначеного", /^[a-zA-Z0-9а-яА-Я_і\s]+$/);
     await conversation.external(async () => {
         await listCellApi.update({
             id: cellId,
@@ -79,14 +79,14 @@ export async function add(conversation: MyConversation, ctx: MyContext){
 async function getAddPayload(ctx: MyContext, conversation: MyConversation): Promise<CreateListCellDTO>{
     const inline: InlineKeyboard = new InlineKeyboard().text("Пропустити", "skip");
     const listTitle: string = ctx.callbackQuery.data.match(/(?<=listCell-add-title=)[a-zA-Z0-9а-яА-Я_і]+/g)[0];
-    const item = await askAndGetInput(ctx, conversation, "Введіть назву:", /^[a-zA-Z0-9а-яА-Я_і]+$/);
-    const amount = parseInt(await askAndGetInput(ctx, conversation, "Введіть кількість:", /^\d+$/, inline))
-    const assignee = await askAndGetInput(ctx, conversation, "Введіть дорученого:", /^[a-zA-Z0-9а-яА-Я_і]+$/, inline);
+    const item = await askAndGetInput(ctx, conversation, "Введіть назву:", /^[a-zA-Z0-9а-яА-Я_і\s]+$/);
+    const description = await askAndGetInput(ctx, conversation, "Введіть додатковий опис:", /^[a-zA-Z0-9а-яА-Я_і\s]+$/, inline)
+    const assignee = await askAndGetInput(ctx, conversation, "Введіть дорученого:", /^[a-zA-Z0-9а-яА-Я_і\s]+$/, inline);
     await ctx.deleteMessage();
     return {
         listTitle,
         item,
-        amount,
+        description,
         assignee
     }
 }

@@ -37,8 +37,8 @@ export class ListResponse extends DefaultResponse {
         }else {
             list.cells.forEach(cell => {
                 payload += `\n**>Назва: ${cell.item}\n`
-                if(cell.amount){
-                    payload += `>Кількість: ${cell.amount}\n`;
+                if(cell.description){
+                    payload += `>Опис: ${cell.description}\n`;
                 }
                 if(cell.assignee){
                     payload += `>Доручено: ${cell.assignee}\n`;
