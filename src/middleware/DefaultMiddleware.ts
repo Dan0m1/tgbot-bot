@@ -1,6 +1,7 @@
 import {Composer} from "grammy";
 import {MyContext} from "../bot";
 import {deleteOutdatedMsg} from "../utils/DeleteOutdatedMessageUtil";
+import outdatedTimeConfig from "../configuration/outdatedTimeConfig";
 
 export const defaultMiddleware: Composer<MyContext> = new Composer<MyContext>();
 
@@ -40,7 +41,7 @@ async function help(ctx: MyContext): Promise<void> {
         "*/help\\_assign* \\- команди для призначення завдань\n" +
         "*/help\\_extort* \\- команди для вимагання грошей зі слейвів\n"
         , {parse_mode: "MarkdownV2"});
-    await deleteOutdatedMsg(ctx, msg, 120000);
+    await deleteOutdatedMsg(ctx, msg, outdatedTimeConfig().longLifeTime);
 }
 
 async function helpLists(ctx: MyContext): Promise<void> {
@@ -49,7 +50,7 @@ async function helpLists(ctx: MyContext): Promise<void> {
         "*/add\\_list* *_назва\\_латинськими\\_літерами_* \\- додати новий список\n" +
         "*/delete\\_list* *_назва\\_існуючого\\_списку_* \\- видалити існуючий список\n"
         , {parse_mode: "MarkdownV2"});
-    await deleteOutdatedMsg(ctx, msg, 120000);
+    await deleteOutdatedMsg(ctx, msg, outdatedTimeConfig().longLifeTime);
 }
 
 async function helpAssign(ctx: MyContext): Promise<void> {
@@ -60,7 +61,7 @@ async function helpAssign(ctx: MyContext): Promise<void> {
         "*/check\\_assigned\\_to* *_тегнути\\_користувача_* \\- переглянути завдання тегнутого слейва\n" +
         "*/assigned\\_to\\_me* \\- переглянути свої завдання\n"
         , {parse_mode: "MarkdownV2"});
-    await deleteOutdatedMsg(ctx, msg, 120000);
+    await deleteOutdatedMsg(ctx, msg, outdatedTimeConfig().longLifeTime);
 }
 
 async function helpExtort(ctx: MyContext): Promise<void> {
@@ -69,5 +70,5 @@ async function helpExtort(ctx: MyContext): Promise<void> {
         "*/extort\\_from* *\\[_перелік\\_імен_\\]* *_сума_* \\- вимагати гроші у перелічених слейвів\n" +
         "*/change\\_extort* *\\[_перелік\\_імен_\\]* *_сума_* \\- змінити суму вимагання у перелічених слейвів\n"
         , {parse_mode: "MarkdownV2"});
-    await deleteOutdatedMsg(ctx, msg, 120000);
+    await deleteOutdatedMsg(ctx, msg, outdatedTimeConfig().longLifeTime);
 }

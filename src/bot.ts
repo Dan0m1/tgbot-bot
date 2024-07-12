@@ -15,6 +15,8 @@ import {listCellMiddleware} from "./middleware/ListCellMiddleware";
 import {defaultMiddleware} from "./middleware/DefaultMiddleware";
 
 interface SessionData {
+    ListTimeoutId: NodeJS.Timeout;
+    ListCellTimeoutId: NodeJS.Timeout;
 }
 
 export type MyContext = Context & SessionFlavor<SessionData> & ConversationFlavor;

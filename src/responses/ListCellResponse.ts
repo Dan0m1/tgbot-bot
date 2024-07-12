@@ -24,6 +24,6 @@ export class ListCellResponse extends DefaultResponse{
             payload += "Виконано: ❌\n"
         }
         const msg = await ctx.reply(payload, {reply_markup: inline});
-        await deleteOutdatedMsg(ctx, msg, this.longLifeTime);
+        ctx.session.ListCellTimeoutId =  await deleteOutdatedMsg(ctx, msg, this.longLifeTime);
     }
 }

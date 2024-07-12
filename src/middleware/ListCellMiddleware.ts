@@ -52,6 +52,7 @@ function checkIfListCellRequested(ctx:MyContext): boolean{
 }
 
 async function updateCell(ctx: MyContext): Promise<void>{
+    clearTimeout(ctx.session.ListCellTimeoutId);
     await ctx.answerCallbackQuery();
     await ctx.conversation.enter("update");
 }
@@ -66,6 +67,7 @@ async function deleteCell(ctx: MyContext): Promise<void>{
 }
 
 async function addCell(ctx: MyContext): Promise<void>{
+    clearTimeout(ctx.session.ListTimeoutId);
     await ctx.answerCallbackQuery();
     await ctx.conversation.enter("add");
 }

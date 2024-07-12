@@ -27,7 +27,7 @@ export class ListResponse extends DefaultResponse {
     async displaySingleList(ctx: MyContext, list: ListApiResponseData): Promise<void>{
         const payload: string = this.buildListPayload(list);
         const msg = await ctx.reply(payload, {parse_mode: "MarkdownV2", reply_markup: new InlineKeyboard().text("Додати запис",`listCell-add-title=${list.title}`)});
-        await deleteOutdatedMsg(ctx, msg, this.longLifeTime);
+        ctx.session.ListTimeoutId = await deleteOutdatedMsg(ctx, msg, this.longLifeTime);
     }
 
     buildListPayload(list: ListApiResponseData): string{
