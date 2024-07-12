@@ -35,7 +35,7 @@ async function updateDescription(conversation: MyConversation, ctx: MyContext, c
 }
 
 async function updateAssignee(conversation: MyConversation, ctx: MyContext, cellId: number){
-    const assignee = await askAndGetInput(ctx, conversation, "Введіть нового призначеного", /^[a-zA-Z0-9а-яА-Я_і'\s]+$/);
+    const assignee = await askAndGetInput(ctx, conversation, "Введіть нового призначеного", /^[@a-zA-Z0-9а-яА-Я_і'\s]+$/);
     await conversation.external(async () => {
         await listCellApi.update({
             id: cellId,
@@ -82,7 +82,7 @@ async function getAddPayload(ctx: MyContext, conversation: MyConversation): Prom
     const listTitle: string = ctx.callbackQuery.data.match(/(?<=listCell-add-title=)[a-zA-Z0-9_]+/g)[0];
     const item = await askAndGetInput(ctx, conversation, "Введіть назву:", /^[a-zA-Z0-9а-яА-Я_і'\s]+$/);
     const description = await askAndGetInput(ctx, conversation, "Введіть додатковий опис:", /^[a-zA-Z0-9а-яА-Я_і'\s]+$/, inline)
-    const assignee = await askAndGetInput(ctx, conversation, "Введіть дорученого:", /^[a-zA-Z0-9а-яА-Я_і'\s]+$/, inline);
+    const assignee = await askAndGetInput(ctx, conversation, "Введіть дорученого:", /^[@a-zA-Z0-9а-яА-Я_і'\s]+$/, inline);
     await ctx.deleteMessage();
     return {
         listTitle,
