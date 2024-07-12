@@ -36,12 +36,12 @@ export class ListResponse extends DefaultResponse {
             payload += "Список пустий\\.";
         }else {
             list.cells.forEach(cell => {
-                payload += `\n**>Назва: ${cell.item}\n`
+                payload += `\n**>Назва: ${cell.item.replace("-", "\\-")}\n`
                 if(cell.description){
-                    payload += `>Опис: ${cell.description}\n`;
+                    payload += `>Опис: ${cell.description.replace("-", "\\-")}\n`;
                 }
                 if(cell.assignee){
-                    payload += `>Доручено: ${cell.assignee}\n`;
+                    payload += `>Доручено: ${cell.assignee.replace("-", "\\-")}\n`;
                 }
                 if (cell.isDone) {
                     payload += ">Виконано: ✔️\n"
