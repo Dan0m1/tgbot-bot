@@ -25,7 +25,7 @@ export async function update(conversation: MyConversation, ctx: MyContext){
 }
 
 async function updateDescription(conversation: MyConversation, ctx: MyContext, cellId: number){
-    const description: string = await askAndGetInput(ctx, conversation, "Введіть новий опис", /^[a-zA-Z0-9а-яА-Я_і\s]+$/);
+    const description: string = await askAndGetInput(ctx, conversation, "Введіть новий опис", /^[a-zA-Z0-9а-яА-Я_і'\s]+$/);
     await conversation.external(async () => {
         await listCellApi.update({
             id: cellId,
@@ -35,7 +35,7 @@ async function updateDescription(conversation: MyConversation, ctx: MyContext, c
 }
 
 async function updateAssignee(conversation: MyConversation, ctx: MyContext, cellId: number){
-    const assignee = await askAndGetInput(ctx, conversation, "Введіть нового призначеного", /^[a-zA-Z0-9а-яА-Я_і\s]+$/);
+    const assignee = await askAndGetInput(ctx, conversation, "Введіть нового призначеного", /^[a-zA-Z0-9а-яА-Я_і'\s]+$/);
     await conversation.external(async () => {
         await listCellApi.update({
             id: cellId,
@@ -79,10 +79,10 @@ export async function add(conversation: MyConversation, ctx: MyContext){
 
 async function getAddPayload(ctx: MyContext, conversation: MyConversation): Promise<CreateListCellDTO>{
     const inline: InlineKeyboard = new InlineKeyboard().text("Пропустити", "skip");
-    const listTitle: string = ctx.callbackQuery.data.match(/(?<=listCell-add-title=)[a-zA-Z0-9а-яА-Я_і]+/g)[0];
-    const item = await askAndGetInput(ctx, conversation, "Введіть назву:", /^[a-zA-Z0-9а-яА-Я_і\s]+$/);
-    const description = await askAndGetInput(ctx, conversation, "Введіть додатковий опис:", /^[a-zA-Z0-9а-яА-Я_і\s]+$/, inline)
-    const assignee = await askAndGetInput(ctx, conversation, "Введіть дорученого:", /^[a-zA-Z0-9а-яА-Я_і\s]+$/, inline);
+    const listTitle: string = ctx.callbackQuery.data.match(/(?<=listCell-add-title=)[a-zA-Z0-9_]+/g)[0];
+    const item = await askAndGetInput(ctx, conversation, "Введіть назву:", /^[a-zA-Z0-9а-яА-Я_і'\s]+$/);
+    const description = await askAndGetInput(ctx, conversation, "Введіть додатковий опис:", /^[a-zA-Z0-9а-яА-Я_і'\s]+$/, inline)
+    const assignee = await askAndGetInput(ctx, conversation, "Введіть дорученого:", /^[a-zA-Z0-9а-яА-Я_і'\s]+$/, inline);
     await ctx.deleteMessage();
     return {
         listTitle,
@@ -95,8 +95,8 @@ async function getAddPayload(ctx: MyContext, conversation: MyConversation): Prom
 async function askAndGetInput(ctx: MyContext, conversation: MyConversation, message: string, regex: RegExp, inline?: InlineKeyboard): Promise<string> {
     await ctx.api.editMessageText(ctx.msg.chat.id, ctx.msg.message_id, message, {reply_markup: inline});
     const context: MyContext = await conversation.waitUntil(
-        (ctxt) => regex.test(ctxt.msg.text) || ctxt.hasCallbackQuery("skip"),
-        async (ctxt: MyContext) => ctxt.deleteMessage()
+        (ctx) => regex.test(ctx.msg.text) || ctx.hasCallbackQuery("skip"),
+        async (ctx: MyContext) => ctx.deleteMessage()
     );
     if(context.hasCallbackQuery("skip")) {
         await context.answerCallbackQuery();
