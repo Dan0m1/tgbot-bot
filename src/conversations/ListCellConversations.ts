@@ -95,13 +95,13 @@ async function getAddPayload(ctx: MyContext, conversation: MyConversation): Prom
 async function askAndGetInput(ctx: MyContext, conversation: MyConversation, message: string, regex: RegExp, inline?: InlineKeyboard): Promise<string> {
     await ctx.api.editMessageText(ctx.msg.chat.id, ctx.msg.message_id, message, {reply_markup: inline});
     const context: MyContext = await conversation.waitUntil(
-        (ctx) => regex.test(ctx.msg.text) || ctx.hasCallbackQuery("skip"),
-        async (ctx: MyContext) => ctx.deleteMessage()
+        (ctxt) => regex.test(ctxt.msg.text) || ctxt.hasCallbackQuery("skip"),
+        async (ctxt: MyContext) => ctxt.deleteMessage()
     );
     if(context.hasCallbackQuery("skip")) {
         await context.answerCallbackQuery();
         return null;
     }
-    await ctx.api.deleteMessage(context.msg.chat.id, context.msg.message_id);
+    await context.api.deleteMessage(context.msg.chat.id, context.msg.message_id);
     return context.msg.text;
 }
