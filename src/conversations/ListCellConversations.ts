@@ -81,8 +81,8 @@ async function getAddPayload(ctx: MyContext, conversation: MyConversation): Prom
     const inline: InlineKeyboard = new InlineKeyboard().text("Пропустити", "skip");
     const listTitle: string = ctx.callbackQuery.data.match(/(?<=listCell-add-title=)[a-zA-Z0-9_]+/g)[0];
     const item = await askAndGetInput(ctx, conversation, "Введіть назву:", /^[a-zA-Z0-9а-яА-Яі'\s\-]+$/);
-    const description = await askAndGetInput(ctx, conversation, "Введіть додатковий опис:", /^[a-zA-Z0-9а-яА-Яі'\s\-]]+$/, inline)
-    const assignee = await askAndGetInput(ctx, conversation, "Введіть дорученого:", /^[@a-zA-Z0-9а-яА-Яі'\s\-]]+$/, inline);
+    const description = await askAndGetInput(ctx, conversation, "Введіть додатковий опис:", /^[a-zA-Z0-9а-яА-Яі'\s\-]+$/, inline)
+    const assignee = await askAndGetInput(ctx, conversation, "Введіть дорученого:", /^[@a-zA-Z0-9а-яА-Яі'\s\-]+$/, inline);
     await ctx.deleteMessage();
     return {
         listTitle,
