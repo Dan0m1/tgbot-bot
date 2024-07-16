@@ -25,7 +25,7 @@ export async function update(conversation: MyConversation, ctx: MyContext){
 }
 
 async function updateDescription(conversation: MyConversation, ctx: MyContext, cellId: number){
-    const description: string = await askAndGetInput(ctx, conversation, "Введіть новий опис", /^[a-zA-Z0-9а-яА-Я_і'\s]+$/);
+    const description: string = await askAndGetInput(ctx, conversation, "Введіть новий опис", /^[a-zA-Z0-9а-яА-Я_і'\s\-]+$/);
     await conversation.external(async () => {
         await listCellApi.update({
             id: cellId,
@@ -35,7 +35,7 @@ async function updateDescription(conversation: MyConversation, ctx: MyContext, c
 }
 
 async function updateAssignee(conversation: MyConversation, ctx: MyContext, cellId: number){
-    const assignee = await askAndGetInput(ctx, conversation, "Введіть нового призначеного", /^[@a-zA-Z0-9а-яА-Я_і'\s]+$/);
+    const assignee = await askAndGetInput(ctx, conversation, "Введіть нового призначеного", /^[@a-zA-Z0-9а-яА-Я_і'\s\-]+$/);
     await conversation.external(async () => {
         await listCellApi.update({
             id: cellId,
