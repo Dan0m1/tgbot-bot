@@ -12,7 +12,7 @@ export class JarResponse extends DefaultResponse{
     }
 
     public async displayJar(ctx: MyContext, jarResponse: JarApiResponseData, jarUserResponse: JarUserApiResponseData[]){
-        let payload: string = `\t*${jarResponse.title}*\n_${jarResponse.description}_\n\nЗібрано: ${replaceReservedCharacters((jarResponse.balance/100).toString())}/${jarResponse.goal/100}\n`;
+        let payload: string = `\t*${jarResponse.title}*\n_${jarResponse.description}_\n\nЗібрано: ${replaceReservedCharacters((jarResponse.balance/100).toString())}\n`;
         if(jarUserResponse) {
             for (const jarUser of jarUserResponse) {
                 const cat = jarUser.fulfilled ? "✅" : replaceReservedCharacters(jarUser.moneyStatus);
