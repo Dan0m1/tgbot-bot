@@ -3,6 +3,7 @@ import {MyContext} from "../bot";
 import {InlineKeyboard} from "grammy";
 import {ListApiResponseData} from "../../lib/data/apiResponses/ListApiResponseData";
 import {deleteOutdatedMsg} from "../utils/DeleteOutdatedMessageUtil";
+import {replaceReservedCharacters} from "../utils/ReservedCharacterReplacer";
 
 export class ListResponse extends DefaultResponse {
     constructor() {
@@ -36,12 +37,12 @@ export class ListResponse extends DefaultResponse {
             payload += "Список пустий\\.";
         }else {
             list.cells.forEach(cell => {
-                payload += `\n**>Назва: ${cell.item.replace("-", "\\-")}\n`
+                payload += `\n**>Назва: ${replaceReservedCharacters(cell.item)}\n`
                 if(cell.description){
-                    payload += `>Опис: ${cell.description.replace("-", "\\-")}\n`;
+                    payload += `>Опис: ${replaceReservedCharacters(cell.description)}\n`;
                 }
                 if(cell.assignee){
-                    payload += `>Доручено: ${cell.assignee.replace("-", "\\-")}\n`;
+                    payload += `>Доручено: ${replaceReservedCharacters(cell.assignee)}\n`;
                 }
                 if (cell.isDone) {
                     payload += ">Виконано: ✔️\n"
@@ -51,6 +52,7 @@ export class ListResponse extends DefaultResponse {
                 payload += `>Оглянути: /show\\_cell\\_${list.title}\\_${cell.id}`
             })
         }
+        console.log(payload)
         return payload;
     }
 }

@@ -11,14 +11,12 @@ export class ListCellResponse extends DefaultResponse{
 
     async displayCell(ctx: MyContext, cell: ListCellSingleApiResponseData, inline: InlineKeyboard){
         let payload: string = "";
-        payload += `Назва: ${cell.item.replace("-", "\\-")}\n`;
+        payload += `Назва: ${cell.item}\n`;
         if(cell.description){
-            console.log(cell.description);
-            payload += `Опис: ${cell.description.replace("-", "\\-")}\n`;
+            payload += `Опис: ${cell.description}\n`;
         }
         if(cell.assignee){
-            console.log(cell.assignee);
-            payload += `Доручено: ${cell.assignee.replace("-", "\\-")}\n`;
+            payload += `Доручено: ${cell.assignee}\n`;
         }
         if (cell.isDone){
             payload += "Виконано: ✔️\n"
